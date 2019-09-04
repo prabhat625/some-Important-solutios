@@ -1,0 +1,107 @@
+import java.util.*;
+import java.math.*;
+public class Main
+{
+
+    public static long[][] adjoint(long[][] brr,int n)
+    {
+        long[][] arr=new long[n][n];
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                arr[i][j]=(long)(Math.pow(-1,i+j)*det(find(brr,n,i,j),n-1));
+            }
+        }
+        return transpose(arr,n);
+    }
+    public static long[][] transpose(long[][] arr,int n)
+    {
+        for(int i=0;i<n;i++)
+        {
+            for(int j=i+1;j<n;j++)
+            {
+                long x=arr[i][j];
+                arr[i][j]=arr[j][i];
+                arr[j][i]=x;
+            }
+        }
+        return arr;
+    }
+	public static long[][] multiply(long[][] arr,int a,int b,long[][] brr,int c,int d)
+	{
+	    if(b!=c)
+	    return null;
+	    long[][] crr=new long[a][d];
+	    for(int i=0;i<a;i++)
+	    {
+	        for(int j=0;j<d;j++)
+	        {
+	            crr[i][j]=0;
+	            for(int k=0;k<b;k++)
+	            {
+	                crr[i][j]+=arr[i][k]*brr[k][j];
+	            }
+	            System.out.print(crr[i][j]+" ");
+	        }
+	        System.out.println("");
+	    }
+	    return crr;
+	}
+	public static long det(long[][] arr,int n)
+	{
+	    long ans=0;
+	    ///   Base Case  ///
+	    
+	    if(n==1)
+	    {
+	        return arr[0][0];
+	    }
+	    
+	    
+	    /// Recursive Part ///
+	    
+	   int i=0;
+	        for(int j=0;j<n;j++)
+	        {
+	            long p=det(find(arr,n,i,j),n-1);
+	            ans+=(((long)Math.pow(-1,i+1+j+1))*arr[i][j]*p);
+	        }
+	    return ans;
+	}
+	private static long[][] find(long[][] arr,int n ,int r,int c)
+	{
+	    long[][] brr=new long[n-1][n-1];
+	    ArrayList<Long> list=new ArrayList();
+	    for(int i=0;i<n;i++)
+	    {
+	        for(int j=0;j<n;j++)
+	        {
+	            if((i!=r)&&(j!=c))
+	            list.add(arr[i][j]);
+	        }
+	    }
+	    int k=0;
+	    for(int i=0;i<n-1;i++)
+	    {  
+	        for(int j=0;j<n-1;j++)
+	            {
+	                brr[i][j]=list.get(k++);
+	            }
+	    }
+	    return brr;
+	}
+	public static void main(String args[])
+	{
+	    Scanner sc=new Scanner(System.in);
+	    int n=sc.nextInt();
+	    long[][] arr=new long[n][n];
+	    for(int i=0;i<n;i++)
+	    {
+	        for(int j=0;j<n;j++)
+	        {
+	            arr[i][j]=sc.nextLong();
+	        }
+	    }
+	}
+}
