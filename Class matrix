@@ -48,7 +48,7 @@ public class Main
 	    }
 	    return crr;
 	}
-	public static long det(long[][] arr,int n)
+	public static long determinant(long[][] arr,int n)
 	{
 	    long ans=0;
 	    ///   Base Case  ///
@@ -91,17 +91,38 @@ public class Main
 	    }
 	    return brr;
 	}
-	public static void main(String args[])
+	public static long  mulmodinv(long p,long mod) throws Exception
 	{
-	    Scanner sc=new Scanner(System.in);
-	    int n=sc.nextInt();
-	    long[][] arr=new long[n][n];
-	    for(int i=0;i<n;i++)
+	    //     a*x+b*y=c  ->  p*x+mod*y=1
+	    if(gcd(p,mod)!=1)
+	    throw new Exception("multiplicative modulo inverse not exist exception");
+	    else
 	    {
-	        for(int j=0;j<n;j++)
-	        {
-	            arr[i][j]=sc.nextLong();
-	        }
+	        long[] arr=extendEuclid(p,mod);
+	        return (arr[0]+mod)%mod;
 	    }
 	}
+	public static long[] extendEuclid(long a,long b)
+    {
+            /****** a*x+b*y=gcd(a,b) *************/
+            long[] ans=new long[2];
+            if(b==0)
+            {
+                ans[0]=1;ans[1]=0;
+                return ans;
+            }
+            else
+            {
+                ans=extendEuclid(b,a%b);
+                long x=ans[0],y=ans[1];
+                ans[0]=y;
+                ans[1]=x-((a/b)*y);
+                return ans;
+            }
+        }
+	public static long  gcd(long a,long b)
+	{
+	    return b==0?a:gcd(b,a%b);
+	}
+
 }
