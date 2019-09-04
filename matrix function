@@ -3,6 +3,20 @@ import java.math.*;
 public class Main
 {
 
+	public static long[][] adjoint(long[][] brr,int n)
+    {
+        long[][] arr=new long[n][n];
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                arr[i][j]=(long)(Math.pow(-1,i+j)*det(find(brr,n,i,j),n-1));
+            }
+        }
+        return transpose(arr,n);
+    }
+    public static long[][] transpose(long[][] arr,int n)
+	
 	public static long[][] multiply(long[][] arr,int a,int b,long[][] brr,int c,int d)
 	{
 	    if(b!=c)
