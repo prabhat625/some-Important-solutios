@@ -1,0 +1,119 @@
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+import java.math.*;
+
+/****  Note use any of  hash1 or hash2 or both to hash a String ***/
+public class Main {
+    public static long[] p1rr,p2rr,inv1,inv2;
+    public static long p1,p2,m1,m2;
+    public static long[]  prefix_hash1,prefix_hash2;
+    public static void main(String args[])
+    {
+        Scanner sc=new Scanner(System.in);
+        String p=sc.next(); // main String
+        String s=sc.next();  // pattern
+        int l1=s.length();
+        int l2=p.length();
+        precompute();
+        computePrefixHash1(s,p1,m1);
+        long count =0;
+        long a=computeHash1(p,p1,m1);
+
+        long x;
+        for(int l=1;l<=l1;l++)               // generating all substring hash Value
+        {
+            for(int i=0;(i+l-1)<l1;i++)
+            {
+                if(i==0)
+                {
+                    x=prefix_hash1[i+l-1];
+                    if(x==a)
+                        count++;
+                }
+                else
+                {
+                    x=((prefix_hash1[i+l-1]+m1-prefix_hash1[i-1])%m1)*(inv1[i]);
+                    x%=m1;
+                    if(x==a)
+                        count++;
+                }
+
+            }
+        }
+        System.out.println(count);
+    }
+    public static void precompute()
+    {
+        p1=31;p2=53;m1=1000000007;m2=1000000009;
+        p1rr=new long[100001];
+        inv1=new long[100001]; // inv1[i]= modulo multiplicative inverse of p1^i under m1
+        inv2=new long[100001];// inv2[i]= modulo multiplicative inverse of p2^i under m2
+        p2rr=new long[100001];
+        p1rr[0]=p2rr[0]=1; inv1[0]=inv2[0]=1;
+        for(int i=1;i<=100000;i++)
+        {
+            p1rr[i]=p1*p1rr[i-1];
+            p1rr[i]%=m1;
+            p2rr[i]=p2*p2rr[i-1];
+            p2rr[i]%=m2;
+            inv1[i]=pow(p1rr[i],m1-2,m1);
+            inv2[i]=pow(p2rr[i],m2-2,m2);
+        }
+    }
+    public static void computePrefixHash1(String x,long p,long m)
+    {
+        int l1=x.length();
+        prefix_hash1=new long[l1];
+        prefix_hash1[0]=x.charAt(0)-'a'+1;
+        for(int i=1;i<l1;i++)
+        {
+            prefix_hash1[i]=prefix_hash1[i-1]+(((x.charAt(i)-'a'+1)*p1rr[i])%m);
+            prefix_hash1[i]%=m;
+        }
+    }
+    public static void computePrefixHash2(String x,long p,long m)
+    {
+        int l1=x.length();
+        prefix_hash2=new long[l1];
+        prefix_hash2[0]=x.charAt(0)-'a'+1;
+        for(int i=1;i<l1;i++)
+        {
+            prefix_hash2[i]=prefix_hash2[i-1]+(((x.charAt(i)-'a'+1)*p2rr[i])%m);
+            prefix_hash2[i]%=m;
+        }
+    }
+    public static long computeHash1(String s,long p,long m)
+    {
+        long ans=0;
+        int l=s.length();
+        for(int i=0;i<l;i++)
+        {
+            ans+=(((s.charAt(i)-'a'+1)*p1rr[i])%m);
+            ans%=m;
+        }
+        return ans;
+    }
+    public static long computeHash2(String s,long p,long m)
+    {
+        long ans=0;
+        int l=s.length();
+        for(int i=0;i<l;i++)
+        {
+            ans+=(((s.charAt(i)-'a'+1)*p2rr[i])%m);
+            ans%=m;
+        }
+        return ans;
+    }
+    public static long pow(long x,long y,long m)
+    {
+        if(y==0) {
+            return 1;
+        }
+        long p=pow(x,y/2,m);
+        p=((p)*(p))%m;
+        if(y%2==1)
+            p=(p*(x))%m;
+        return p;
+    }
+}
