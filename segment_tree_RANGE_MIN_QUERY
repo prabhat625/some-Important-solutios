@@ -1,0 +1,94 @@
+import java.util.*;
+import java.io.*;
+public class Main
+{
+    public static void build(int[] arr,int start,int end,int ind,int[] seg)
+    {
+        if(start==end)
+        {
+            seg[ind]=arr[start];
+            return;
+        }
+        build(arr,start,(start+end)/2,2*ind,seg);
+        build(arr,(start+end)/2+1,end,2*ind+1,seg);
+        seg[ind]=Math.min(seg[2*ind],seg[2*ind+1]);
+        return;
+    }
+    public static int query(int s,int e,int ind,int qs,int qe,int[] seg)
+    {
+        // no overlapp
+        if(qe<s||qs>e)
+        return Integer.MAX_VALUE;
+        
+        // complete overlapp
+        if(qs<=s&&qe>=e)
+        return seg[ind];
+        
+        // partial overlapp
+        
+        int mid=(s+e)/2;
+        int x=query(s,mid,2*ind,qs,qe,seg);
+        int y=query(mid+1,e,2*ind+1,qs,qe,seg);
+        return Math.min(x,y);
+    }
+    public static void update(int s,int e,int ind,int pos,int val,int[] seg)
+    {
+        // no overlapp
+        if(pos<s||pos>e)
+        return;
+        
+        // complete overlapp
+        if(s==e)
+        {
+            seg[ind]=val;
+            return;
+        }
+        
+        // partial overlapp
+        update(s,(s+e)/2,2*ind,pos,val,seg);
+        update((s+e)/2+1,e,2*ind+1,pos,val,seg);
+        seg[ind]=Math.min(seg[2*ind],seg[2*ind+1]);
+        return;
+    }
+	public static void main(String[] args) throws IOException {
+	/*	int[] arr={1,3,2,-5,6,4};
+		int[] seg=new int[4*6+1];
+		build(arr,0,5,1,seg);
+		System.out.print(query(0,5,1,0,5,seg));
+		update(0,5,1,3,15,seg);
+		System.out.print(query(0,5,1,0,5,seg));
+	*/	
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+		PrintWriter pw=new PrintWriter(System.out);
+		String[] inp=br.readLine().split("\\s+");
+		int n=Integer.parseInt(inp[0]);
+		int q=Integer.parseInt(inp[1]);
+		int[] arr=new int[n];
+		int[] seg=new int[4*n+1];
+		inp=br.readLine().split("\\s+");
+		for(int i=0;i<n;i++)
+		{
+		    arr[i]=Integer.parseInt(inp[i]);
+		}
+		build(arr,0,n-1,1,seg);
+		while(q-->0)
+		{
+		    inp=br.readLine().split("\\s+");
+		    if(inp[0].compareTo("q")==0)
+		    {
+		       int x=Integer.parseInt(inp[1]);x--;
+		       int y=Integer.parseInt(inp[2]);y--;
+		       pw.println(query(0,n-1,1,x,y,seg));
+		    }
+		    else
+		    {
+		        int x=Integer.parseInt(inp[1]);x--;
+		        int y=Integer.parseInt(inp[2]);
+		        update(0,n-1,1,x,y,seg);
+		    }
+		}
+		br.close();
+		pw.flush();
+		pw.close();
+	}
+}
