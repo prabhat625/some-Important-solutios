@@ -1,5 +1,5 @@
 /******************************************************************************
-        counting inversions using BIT with coordinate compression
+counting inversions using BIT with coordinate compression on spoj :- INVCNT
 *******************************************************************************/
 import java.util.*;
 public class Main
