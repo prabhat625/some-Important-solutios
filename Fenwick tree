@@ -10,7 +10,7 @@ public class Main
 		while(t-->0)
 		{
 		    int n=sc.nextInt();
-		    HashMap<Integer,Integer> map=new HashMap();
+		    HashMap<Integer,Integer> map=new HashMap();  // for coordinate compression
 		    int[] arr=new int[n];
 		    int[] brr=new int[n];
 		    int k=1;
