@@ -1,0 +1,56 @@
+/******************************************************************************
+        counting inversions using BIT with coordinate compression
+*******************************************************************************/
+import java.util.*;
+public class Main
+{
+	public static void main(String[] args) {
+		Scanner sc=new Scanner(System.in);
+		int t=sc.nextInt();
+		while(t-->0)
+		{
+		    int n=sc.nextInt();
+		    HashMap<Integer,Integer> map=new HashMap();
+		    int[] arr=new int[n];
+		    int[] brr=new int[n];
+		    int k=1;
+		    for(int i=0;i<n;i++)
+		    brr[i]=arr[i]=sc.nextInt();
+		    Arrays.parallelSort(brr);
+		    for(int x:brr)
+		    {
+		        if(!map.containsKey(x))
+		        map.put(x,k++);
+		    }
+		    int[] bit=new int[k+1];
+		    Arrays.fill(bit,0);
+		    long inv=0;
+		    for(int i=n-1;i>=0;i--)
+		    {
+		        long x=query(map.get(arr[i])-1,bit);
+		        update(bit,map.get(arr[i]),1);
+		        inv+=x;
+		    }
+		    System.out.println(inv);
+		}
+	}
+	public static int query(int x,int[] bit)
+	{
+	    int ret=0;
+	    while(x>0)
+	    {
+	        ret+=bit[x];
+	        // x&(-x) -> rightmost set-bit or largest power f two that divide x 
+	        x-=(x&(-x)); 
+	    }
+	    return ret;
+	}
+	public static void update(int[] bit,int pos,int inc)
+	{
+	    while(pos<bit.length)
+	    {
+	        bit[pos]++;
+	        pos+=(pos&(-pos));
+	    }
+	}
+}
