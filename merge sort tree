@@ -1,0 +1,116 @@
+/******************************************************************************
+ 
+     Merge sort tree( segment tree ) :- Transaction (hackerearth)
+     
+     
+     note:- "this solution require fast io for AC "
+ 
+*******************************************************************************/
+import java.util.*;
+import java.io.*;
+public class Main
+{
+	public static void main(String[] args) throws Exception {
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder str=new StringBuilder();
+		PrintWriter pw=new PrintWriter(System.out);
+		String[] rr=br.readLine().split("\\s+");
+        int n=Integer.parseInt(rr[0]);
+        int q=Integer.parseInt(rr[1]);
+        rr=br.readLine().split("\\s+");
+        int[] arr=new int[n];
+        for(int i=0;i<n;i++)
+        arr[i]=Integer.parseInt(rr[i]);
+        ArrayList<Integer>[] seg=new ArrayList[4*n+1];
+        build(arr,0,n-1,seg,1);
+        while(q-->0)
+        {
+            rr=br.readLine().split("\\s+");
+            int x=Integer.parseInt(rr[0]);
+            int y=Integer.parseInt(rr[1]);
+            int ans=query(x,y,seg,1,0,n-1);
+            if(ans!=-1)
+            str.append(arr[ans]+"\n");
+            else
+            str.append("-1\n");
+        }
+        pw.println(str);
+        pw.flush();
+        pw.close();
+	}
+	
+	public static void build(int[] arr,int strt,int end ,ArrayList<Integer>[] seg,int ind)
+	{
+	    ArrayList<Integer> list=new ArrayList();
+	    if(strt==end){
+	        seg[ind]=list;
+	        seg[ind].add(arr[strt]);
+	    }
+	    else{
+	        build(arr,strt,(strt+end)/2,seg,2*ind);
+	        build(arr,(strt+end)/2+1,end,seg,2*ind+1);
+	        seg[ind]=merge(seg[2*ind],seg[2*ind+1],list);
+	    }
+	}
+	public static ArrayList<Integer> merge(ArrayList<Integer> l1,ArrayList<Integer> l2,ArrayList<Integer> l3)
+	{
+	    int n=l1.size();
+	    int m=l2.size();
+	    int i=0,j=0;
+	    while(i<n&&j<m)
+	    {
+	        if(l1.get(i)<=l2.get(j))
+	            l3.add(l1.get(i++));
+	        else
+	            l3.add(l2.get(j++));
+	    }
+	    while(i<n)
+	    l3.add(l1.get(i++));
+	    while(j<m)
+	    l3.add(l2.get(j++));
+	    return l3;
+	}
+	public static int query(int v,int y,ArrayList<Integer>[] seg,int ind,int strt,int end)
+	{
+	   if(strt==end)
+	   {
+	       if(bs(seg[ind],v)==y)
+	       return strt;
+	       else
+	       return -1;
+	   }
+	   int v1=bs(seg[2*ind],v);
+	   int v2=bs(seg[2*ind+1],v);
+	   if((v1+v2)>=y)
+	   {
+	       if(v1>=y)
+	           return query(v,y,seg,2*ind,strt,(strt+end)/2);
+	       else
+	            return query(v,y-v1,seg,2*ind+1,(strt+end)/2+1,end);
+	   }
+	   else
+	   return -1;
+	}
+	public static int bs(ArrayList<Integer> list,int x)
+	{
+	    int l=0;
+	    int r=list.size()-1;
+	    int ans=-1;
+	    while(l<=r)
+	    {
+	        int m=(l+r)/2;
+	        if(list.get(m)<x)
+	        l=m+1;
+	        else
+	        {
+	            r=m-1;
+	            ans=m;
+	        }
+	    }
+	    if(ans!=-1)
+	        ans=list.size()-ans;
+	    else
+	       ans=0;
+	    return ans;
+	}
+}
