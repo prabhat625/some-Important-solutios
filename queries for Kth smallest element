@@ -1,0 +1,89 @@
+import java.util.*;
+public class HelloWorld{
+    public static class Node implements Comparable<Node>{
+    int indx;
+    int val;
+    public Node(int x,int y)
+    {
+        val=y;indx=x;
+    }
+    public int compareTo(Node b)
+    {
+        if(b.val==val)
+        return indx-b.indx;
+        return val-b.val;
+    }
+    }
+     public static void main(String []args){
+        Scanner sc=new Scanner(System.in);
+        int n=sc.nextInt();
+        Node[] arr=new Node[n];
+        for(int i=0;i<n;i++)
+            arr[i]=new Node(i,sc.nextInt());
+        Node[][] seg=new Node[4*n+1][];
+        int[][] seg1=new int[4*n+1][];
+        build(seg,seg1,1,arr,n);
+        int q=sc.nextInt();
+        while(q-->0)
+        {
+            int l=sc.nextInt()-1;
+            int r=sc.nextInt()-1;
+            int k=sc.nextInt();
+            System.out.println(query(l,r,k,seg,seg1,1).val);
+        }
+     }
+     public static void build(Node[][] seg,int[][] seg1,int ind,Node[] arr,int n)
+     {
+         seg[ind]=arr;
+         seg1[ind]=new int[n];
+         if(n==1)
+         return;
+         Node[] brr,crr;
+         brr=new Node[n/2];
+         crr=new Node[n-n/2];
+         ArrayList<Node> list=new ArrayList();
+         for(Node x:arr)
+         list.add(x);
+         Collections.sort(list);
+         HashSet<Node> set=new HashSet();
+         for(int i=0;i<n/2;i++)
+             set.add(list.get(i));
+        int tmp=0,p=0,q=0;
+         for(int i=0;i<n;i++)
+         {
+             if(set.contains(arr[i]))
+             {
+                 brr[p++]=arr[i];
+                 tmp++;
+             }
+             else
+             crr[q++]=arr[i];
+             seg1[ind][i]=tmp;
+         }
+         build(seg,seg1,2*ind,brr,n/2);
+         build(seg,seg1,2*ind+1,crr,n-n/2);
+     }
+     public static Node query(int l,int r,int k,Node[][] seg,int[][] seg1,int ind)
+     {
+        //System.out.println(l+" "+r+" "+k+" "+ind);
+         if((r-l+1<k)||(k<=0))
+         return null;
+         if(l==r)
+         return seg[ind][l];
+         if(l==0)
+         {
+             if(seg1[ind][r]>=k)
+             return query(0,seg1[ind][r]-1,k,seg,seg1,2*ind);
+             else
+             return query(0,r-l-seg1[ind][r],k-seg1[ind][r],seg,seg1,2*ind+1);
+         }
+         else
+         {
+             int x=-seg1[ind][l-1]+seg1[ind][r];
+             if(x>=k)
+             return query(seg1[ind][l-1],seg1[ind][l-1]+x-1,k,seg,seg1,2*ind);
+             else
+             return query(l-seg1[ind][l-1],l-seg1[ind][l-1]+r-l+1-x-1,k-x,seg,seg1,2*ind+1);
+         }
+     }
+}
