@@ -1,0 +1,336 @@
+problem:- https://www.urionlinejudge.com.br/judge/en/problems/view/1695
+
+import java.io.*;
+import java.util.*;
+import java.lang.*;
+import java.math.*;
+public class Main extends Thread  {
+    boolean[] prime;
+    FastScanner sc;
+    PrintWriter pw;
+    MathF mf;
+    long startTime = System.currentTimeMillis();
+    final class FastScanner {
+        BufferedReader br;
+        StringTokenizer st;
+ 
+        public FastScanner() {
+            try {
+                br = new BufferedReader(new InputStreamReader(System.in));
+                st = new StringTokenizer(br.readLine());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+ 
+        public long nlo() {
+            return Long.parseLong(next());
+        }
+ 
+        public String next() {
+            if (st.hasMoreTokens()) return st.nextToken();
+            try {
+                st = new StringTokenizer(br.readLine());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return st.nextToken();
+        }
+ 
+        public int ni() {
+            return Integer.parseInt(next());
+        }
+ 
+        public String nli() {
+            String line = "";
+            if (st.hasMoreTokens()) line = st.nextToken();
+            else try {
+                return br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            while (st.hasMoreTokens()) line += " " + st.nextToken();
+            return line;
+        }
+ 
+        public double nd() {
+            return Double.parseDouble(next());
+        }
+    }
+    final class MathF {
+        long[][] mul(long[][] arr,long[][] brr,int a,int b,int c,int d)
+        {
+            long[][] crr=new long[a][d];
+            for(int i=0;i<a;i++)
+            {
+                for(int j=0;j<d;j++)
+                {
+                    for(int k=0;k<b;k++)
+                    {
+                        crr[i][j]+=(((arr[i][k]%1000000007)*(brr[k][j]%1000000007))%1000000007);
+                    }
+                }
+            }
+            return crr;
+        }
+        int sod(long a)
+        {
+            int ans=0;
+            while(a!=0)
+            {
+                ans+=(a%10);
+                a=a/10;
+            }
+            return ans;
+        }
+        long pow(long a,long b)
+        {
+            if(b==0)
+                return 1;
+            else
+            {
+                long x=pow(a,b/2);
+                if(b%2==1)
+                    return (x*x*a);
+                else
+                    return (x*x);
+            }
+        }
+        public  long gcd(long a, long b) {
+            return (b == 0 ? a : gcd(b, a % b));
+        }
+        public long exponent(long a,long b)
+        {
+            if(b==0)
+                return 1;
+            else
+            {
+                long x=exponent(a,b/2);
+                x*=x;
+                if(b%2==1)
+                    x*=a;
+                return x;
+            }
+        }
+        public  int nod(long x) {
+            int i = 0;
+            while (x != 0) {
+                i++;
+                x = x / 10;
+            }
+            return i;
+        }
+ 
+        public  int nob(long x) {
+            if(x==0)
+                return 1;
+            return (int) Math.floor(Math.log(x) / Math.log(2)) + 1;
+        }
+ 
+        public int[] FastradixSort(int[] f) {
+            int[] to = new int[f.length];
+            {
+                int[] b = new int[65537];
+                for (int i = 0; i < f.length; i++) b[1 + (f[i] & 0xffff)]++;
+                for (int i = 1; i <= 65536; i++) b[i] += b[i - 1];
+                for (int i = 0; i < f.length; i++) to[b[f[i] & 0xffff]++] = f[i];
+                int[] d = f;
+                f = to;
+                to = d;
+            }
+            {
+                int[] b = new int[65537];
+                for (int i = 0; i < f.length; i++) b[1 + (f[i] >>> 16)]++;
+                for (int i = 1; i <= 65536; i++) b[i] += b[i - 1];
+                for (int i = 0; i < f.length; i++) to[b[f[i] >>> 16]++] = f[i];
+                int[] d = f;
+                f = to;
+                to = d;
+            }
+            return f;
+        }
+ 
+        public  void Primesieve(int n) {
+            prime=new boolean[n];
+            for (int i = 0; i < n; i++)
+                prime[i] = true;
+            for (int p = 2; p * p < n; p++) {
+                if (prime[p] == true) {
+                    for (int i = p * p; i < n; i += p)
+                        prime[i] = false;
+                }
+            }
+        }
+    }
+    public Main(ThreadGroup t,Runnable r,String s,long d )
+    {
+        super(t,r,s,d);
+    }
+    public void run()
+    {
+        sc=new FastScanner();
+        pw=new PrintWriter(System.out);
+        mf=new MathF();
+        solve();
+        pw.flush();
+        pw.close();
+    }
+    public static void main(String[] args)
+    {
+        new Main(null,null,"",1<<30).start();
+    }
+ 
+ 
+    /////////////------------------------------------//////////////
+    ////////////------------------Main-Logic--------//////////////
+    ///////////-------------------------------------//////////////
+     public static class Node implements Comparable<Node>{
+    int indx;
+    int val;
+    public Node(int x,int y)
+    {
+        val=y;indx=x;
+    }
+    public int compareTo(Node b)
+    {
+        if(b.val==val)
+        return indx-b.indx;
+        return val-b.val;
+    }
+    }
+    public static int g;
+    public static int[] visit,in,out,val;
+    public static ArrayList<Integer>[] adj;
+    public void solve() {
+      int t=sc.ni();
+      while(t-->0)
+      {
+          int n=sc.ni();
+          int m=sc.ni();
+          visit=new int[n];
+          in=new int[n];
+          out=new int[n];
+          val=new int[n];
+          for(int i=0;i<n;i++)
+          val[i]=sc.ni();
+          adj=new ArrayList[n];
+          for(int i=0;i<n;i++)
+          adj[i]=new ArrayList();
+          for(int i=0;i<n-1;i++)
+          {
+              int x=sc.ni()-1;
+              int y=sc.ni()-1;
+              adj[x].add(y);
+              adj[y].add(x);
+          }
+          g=-1;
+          dfs(0);
+          Node[] arr=new Node[n];
+          for(int i=0;i<n;i++)
+            arr[in[i]]=new Node(in[i],val[i]);
+        Node[][] seg=new Node[4*n+1][];
+        int[][] seg1=new int[4*n+1][];
+        build(seg,seg1,1,arr,n);
+          while(m-->0)
+          {
+              int x=sc.ni()-1;
+              int k=sc.ni();
+              pw.print(query(in[x],out[x],k,seg,seg1,1).val+" ");
+          }
+          pw.println("");
+      }
+    }
+    public static void dfs(int x)
+    {
+        visit[x]=1;
+        in[x]=++g;
+        for(int v:adj[x])
+        {
+            if(visit[v]==0)
+            dfs(v);
+        }
+        out[x]=g;
+    }
+    public static void build(Node[][] seg,int[][] seg1,int ind,Node[] arr,int n)
+     {
+         seg[ind]=arr;
+        /* System.out.println("for ind "+ind);
+         for(int i=0;i<n;i++)
+         System.out.print(arr[i].val+" ");
+         System.out.println("");*/
+         seg1[ind]=new int[n];
+         if(n==1)
+         return;
+         Node[] brr,crr;
+         brr=new Node[n/2];
+         crr=new Node[n-n/2];
+         ArrayList<Node> list=new ArrayList();
+         for(Node x:arr)
+         list.add(x);
+         Collections.sort(list);
+         HashSet<Node> set=new HashSet();
+         for(int i=0;i<n/2;i++)
+             set.add(list.get(i));
+        int tmp=0,p=0,q=0;
+         for(int i=0;i<n;i++)
+         {
+             if(set.contains(arr[i]))
+             {
+                 brr[p++]=arr[i];
+                 tmp++;
+             }
+             else
+             crr[q++]=arr[i];
+             seg1[ind][i]=tmp;
+         }/*
+          System.out.println("indexes ind "+ind);
+         for(int i=0;i<n;i++)
+         System.out.print(seg1[ind][i]+" ");
+         System.out.println("");*/
+         build(seg,seg1,2*ind,brr,n/2);
+         build(seg,seg1,2*ind+1,crr,n-n/2);
+     }
+     public static Node query(int l,int r,int k,Node[][] seg,int[][] seg1,int ind)
+     {
+        //System.out.println(l+" "+r+" "+k+" "+ind);
+         if((r-l+1<k)||(k<=0))
+         return null;
+         if(l==r)
+         return seg[ind][l];
+         if(l==0)
+         {
+             if(seg1[ind][r]>=k)
+             return query(0,seg1[ind][r]-1,k,seg,seg1,2*ind);
+             else
+             return query(0,r-l-seg1[ind][r],k-seg1[ind][r],seg,seg1,2*ind+1);
+         }
+         else
+         {
+             int x=-seg1[ind][l-1]+seg1[ind][r];
+             if(x>=k)
+             return query(seg1[ind][l-1],seg1[ind][l-1]+x-1,k,seg,seg1,2*ind);
+             else
+             return query(l-seg1[ind][l-1],l-seg1[ind][l-1]+r-l+1-x-1,k-x,seg,seg1,2*ind+1);
+         }
+     }
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
